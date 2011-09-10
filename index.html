@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>jQuery Directed Graph</title>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<link rel="Shortcut Icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" href="_js/jq-alerts.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="_js/_main.css" type="text/css" media="all" />
+		<meta name="description" content="jQuery Directed Graph app that plots nodes and edges" />
+	</head>
+	<body>
+
+	<!-- the loading overlay -->
+	<div id="loading-overlay">
+		<div>loading...<br/><img src="_img/loading.gif" /></div>
+	</div>
+
+	<!-- the tool bar -->	
+	<div id="form">
+		<button>new</button>
+		<input type="text" style="color:#999" value="Untitled graph"></input>
+		<button>save</button>
+		<div class="div"></div>
+		<select>
+			<option style="color:ccc">load a graph</option>
+		</select>
+		<button>load</button>
+		<div class="div"></div>
+		<button>delete this graph</button>
+		<div class="div"></div>
+		<button>delete all graphs</button> 
+		<div class="clear"></div>
+		<input type="text" style="color:#999" value="Node" speech x-webkit-speech onspeechchange="speak(this.value);" onwebkitspeechchange="speak(this.value);"></input><button>add</button>
+		<div class="div"></div>
+		<button>weighted matrix</button>
+		<button>adjacency matrix</button>
+		<button>adjacency list</button>
+		<div class="div"></div>
+		<button>depth</button>
+		<div class="div"></div>
+		<button>redraw</button>
+		<button>reset app</button>
+		<div class="clear"></div>
+	</div>
+	
+	<!-- the canvas div must be emptied before plotting anything -->
+	<div id="canvas">
+		<div style="margin: 5px 80px 5px 80px">
+			<div style="text-align:center;float:left"><img src="_js/_img/logo-cetys.png" alt="Logo Cetys" /></div>
+			<div style="text-align:left;float:right;margin-right: 10px; text-align: right">
+					<h2>jQuery Directed Graph</h2>
+					<p style="font-weight:800"><a href="http://www.cetys.mx/" target="_blank">Cetys Universidad</a></p>
+					<p><a href="http://goo.gl/yX1tt" target="_blank">Computer Science Engineering</a></p>
+					<p>Algorithm Design and Analysis (Prof. Wendy Trujillo Lugo)</p>
+					<p><br/><a href="http://luispulido.com" target="_blank">Luis Pulido Díaz</a></p>
+					<p>Last update: May 24, 2011</p>
+			</div>
+			<div class="clear"></div>
+			<p>Recent changes:</p>
+			<ul>
+				<li>Added remove node functionality</li>
+				<li>Added remove edge functionality</li>
+				<li>Added depth calculation</li>
+				<li>Added find shortest path functionality</li>
+			</ul>
+			<p>This application lets you create directed graphs, specifically:</p>
+			<ul>
+				<li>Add nodes</li>
+				<li>Add edges</li>
+				<li>Build the weighted and non-weighted matrix</li>
+				<li>Save graphs (cookies must be enabled, and if erased, graphs will be too)</li>
+				<li>Load saved graphs</li>
+			</ul>
+			<p>The application is easy to use, just by following a few instructions</p>
+			<ul>
+				<li>To add a node, just type the node's name and press enter or click "add"</li>
+				<li>You can add nodes with your voice (chrome only), by pressing the little microphone button</li>
+				<li>To add an edge, double click a node, then click on the target node. To leave the edge unweighted just leave the input blank, if you add something it'll be set as the edge's weight</li>
+				<li>Check the options by right-clicking each node</li>
+				<li>Everything's else is just intuitive</li>
+			</ul>
+			<p>Check the source code and use is as you want</p>
+		</div>
+	</div>
+	
+	<!-- right click menu for each node -->
+	<div class="vmenu"> 
+		<div class="first_li nohover"><span style="font-weight:800"></span></div>
+		<div class="sep_li"></div>
+		<div class="first_li" id="createEdge"><span>Create edge</span></div> 
+		<div class="first_li" id="removeEdge"><span>Remove edge</span></div>
+		<div class="sep_li"></div>
+		<div class="first_li" id="findShortestPath"><span>Shortest path</span></div>
+		<div class="sep_li"></div>
+		<div class="first_li" id="removeNode"><span>Remove node</span></div> 
+	</div>
+	
+	<!-- declare overlay div to show matrix -->
+	<div id="matrix-overlay-div">
+		<div id="matrix-overlay-close"></div>
+		<div id="matrix-overlay"></div>
+	</div>
+	
+	<!-- secret thing hmmm... not so secret, try pressing CTRL + SHIFT + S  (chrome only) -->
+	<div id="secret">
+		<div id="secret-text"></div>
+		<div id="secret-close"></div>
+		<input value="" speech x-webkit-speech onspeechchange="secret(this.value);" onwebkitspeechchange="secret(this.value);"></input>
+	</div>
+	
+	<!-- libraries being used -->
+		<!-- jquery -->
+		<script type="text/javascript" src="_js/jq.js"></script>
+		<!-- jquery UI -->
+		<script type="text/javascript" src="_js/jq-ui.js"></script>
+		<!-- jquery alerts (to use instead of native alert function)-->
+		<script type="text/javascript" src="_js/jq-alerts.js"></script>
+		<!-- jquery notifyBar (to display the notifications) -->
+		<script type="text/javascript" src="_js/jq-notify.js"></script>
+		<!-- all other scripts are used to plot the graph (thanx to draculagraph and raphael libraries) -->
+		<script type="text/javascript" src="_js/Curry-1.0.1.js"></script> 
+		<script type="text/javascript" src="_js/raphael-min.js"></script> 
+		<script type="text/javascript" src="_js/dracula_algorithms.js"></script> 
+		<script type="text/javascript" src="_js/dracula_graffle.js"></script> 
+		<script type="text/javascript" src="_js/dracula_graph.js"></script> 
+		<script type="text/javascript" src="_js/seedrandom.js"></script>
+	
+	<!-- custom libraries -->
+	<script type="text/javascript" src="_js/Cookies.js"></script>
+	<script type="text/javascript" src="_js/_directedGraphCustom-stable.js"></script>
+	
+	<!-- main script -->
+	<script type="text/javascript" src="_js/__main.js"></script>
+
+	<!-- google analytics script --> 
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-23138869-1']);
+	  _gaq.push(['_trackPageview']);
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+	
+	</body>
+</html>

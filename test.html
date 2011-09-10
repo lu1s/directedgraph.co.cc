@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>test</title>
+		<style type="text/css">
+			#canvas{
+				width: 90%;
+				height: 90%;
+				margin: auto;
+				border: solid 1px gray;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="canvas"></div>
+
+
+		<script src="_js/jq.js"></script>
+		<script src="_js/jq-alerts.js"></script>
+		<script src="_js/jq-notify.js"></script>
+		<script src="_js/Curry-1.0.1.js"></script> 
+		<script src="_js/raphael-min.js"></script> 
+		<script src="_js/dracula_algorithms.js"></script> 
+		<script src="_js/dracula_graffle.js"></script> 
+		<script src="_js/dracula_graph.js"></script> 
+		<script src="_js/seedrandom.js"></script>
+		<script src="_js/Cookies.js"></script>
+		<script src="_js/_directedGraphCustom-stable.js"></script>
+
+		<script>
+			$(document).ready(function(){
+		$("#canvas").css({height:(window.innerHeight-$("#form").height()-45)+"px",width:(window.innerWidth-38)+"px"})	
+			})
+			
+			var plot = function(g){
+				$("#canvas").empty()
+				var gr = new Graph()
+				gr.addNodesFromArray(g.nodes)
+				var arr = new Array()
+				var unidirected = !g.isBidirectional
+				for(var i=0;i<g.edges.length;i++)
+					for(var j=0;j<g.edges[i].targets.length;j++)
+						if(typeof g.edges[i].targets[j] == "object")
+							arr.push([g.edges[i].node,g.edges[i].targets[j][0],{directed:unidirected,label:g.edges[i].targets[j][1]}])
+						else
+							arr.push([g.edges[i].node,g.edges[i].targets[j],{directed:unidirected}])
+				gr.addEdgesFromArray(arr)
+				var layouter = new Graph.Layout.Spring(gr)
+				layouter.layout()
+				var renderer = new Graph.Renderer.Raphael("canvas",gr,window.innerWidth-100,window.innerHeight-130)
+				renderer.draw()
+			}
+			
+			var onResize = function(){
+				$("#canvas").css({height:(window.innerHeight-$("#form").height()-45)+"px",width:(window.innerWidth-38)+"px"})
+				try{
+					if(g.nodes.length>0)
+						plot(g)
+				}catch(e){
+					//console.log(e)
+				}
+			};
+			var timer
+			// bind the window to listen for resize event
+			$(window).resize(function(){
+			   timer && clearTimeout(timer)
+			   timer = setTimeout(onResize, 100)
+			})
+
+		</script>
+
+	</body>
+</html>
